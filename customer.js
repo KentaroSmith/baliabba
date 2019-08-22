@@ -23,7 +23,7 @@ connection.connect(function (err) {
             console.log("Price: " + res[i].price);
             console.log("Amount in stock: " + res[i].stock_quantity);
             console.log("==========================================");
-            available_items.push(res[i].item_id);
+            available_items.push(res[i]);
         }
     });
     connection.end()
@@ -38,9 +38,10 @@ var checkout = function () {
                 choices: [available_items]
             },
             {
+                name: "quantity",
                 type: "number",
                 message: "How many would you like to buy?",
-                //Left off here setting up quantity prompt
+                type: "input"
             },
             {
                 type: "confirm",
@@ -51,7 +52,21 @@ var checkout = function () {
         ])
         .then(function (response) {
             if (response.ready) {
-                console.log(response.chosenID);
+                console.log(response);
+                connection.connect(function (err) {
+                    if (err) throw err;
+                    connection.query("SELECT*FROM products WHERE item_id=" + response.chosenID + ";", function (err, res) {
+                        if (err) throw err;
+                        console.log("Item ID: " + res[i].item_id);
+                        console.log("Product Name: " + res[i].product_name);
+                        console.log("Department: " + res[i].department_name);
+                        console.log("Price: " + res[i].price);
+                        console.log("Amount in stock: " + res[i].stock_quantity);
+                        console.log("==========================================");
+                    });
+                    connection.end();
+                })
+
             }
         })
 }
